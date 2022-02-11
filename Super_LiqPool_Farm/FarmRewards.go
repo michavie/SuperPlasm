@@ -5,6 +5,16 @@ import (
 	p "github.com/Crypt0plasm/Firefly-APD"
 )
 
+var (
+	SuperEgldLPDecimals = int64(18)
+)
+
+func ConvertAtomicUnits(Number string) *p.Decimal {
+	Value := p.NFS(Number)
+	Result := mt.DIVxc(Value, mt.POWxc(p.NFI(10), p.NFI(SuperEgldLPDecimals)))
+	return Result
+}
+
 func LpTierProcent(LP *p.Decimal) *p.Decimal {
 	var (
 		TierBonus = new(p.Decimal)
