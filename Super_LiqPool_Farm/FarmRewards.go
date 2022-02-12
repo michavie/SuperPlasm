@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	SuperEgldLPDecimals = int64(18)
+	SuperEgldLPDecimals   = int64(18)
+	SuperFarmRewardAmount = int64(1650)
 )
 
 func ConvertAtomicUnits(Number string) *p.Decimal {
@@ -83,4 +84,20 @@ func VirtualLP(LpAmount, CamelAmount *p.Decimal) *p.Decimal {
 
 	Result := mt.MULxc(LpAmount, Weight)
 	return mt.TruncateCustom(Result, 18)
+}
+
+func SuperRewardComputer(Chain1 []SuperVLP, RewardAmount *p.Decimal) []SuperFarmReward {
+	var (
+		VLPSum     = new(p.Decimal)
+		FinalChain []SuperFarmReward
+	)
+	for i := 0; i < len(Chain1); i++ {
+		VLPSum = mt.ADDxc(VLPSum, Chain1[i].VLP)
+	}
+	for i := 0; i < len(Chain1); i++ {
+		Reward := mt.TruncateCustom(mt.DIVxc(mt.MULxc(Chain1[i].VLP, RewardAmount), VLPSum), 18)
+		Unit := SuperFarmReward{Chain1[i].Address, Reward}
+		FinalChain = append(FinalChain, Unit)
+	}
+	return FinalChain
 }

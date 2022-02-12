@@ -9,30 +9,13 @@ import (
 )
 
 func main() {
-	var (
-		LpAmount string
-		CA       string
-	)
-
-	//Virtual LP Computer
-
-	fmt.Println("Enter LP amount")
-	_, _ = fmt.Scanln(&LpAmount)
-	LP := p.NFS(LpAmount)
-
-	fmt.Println("Camel Amount")
-	_, _ = fmt.Scanln(&CA)
-	CAmount := p.NFS(CA)
-
-	VLP := fr.VirtualLP(LP, CAmount)
-	fmt.Println("Your Base    LP is:", LP)
-	fmt.Println("Your Virtual LP is:", VLP)
 
 	//Snapshoting LP and Camel Amounts and Creating the VLP Chain
 
 	LPChain := fr.CreateLPChain()
 	CamelChain := fr.CreateCamelChain()
 	VLPChain := fr.CreateVLPChain(LPChain, CamelChain)
+	Reward := fr.SuperRewardComputer(VLPChain, p.NFI(fr.SuperFarmRewardAmount))
 
 	OutputFile1, err := os.Create("LP-Chain.txt")
 	if err != nil {
@@ -55,5 +38,14 @@ func main() {
 	defer OutputFile3.Close()
 	_, _ = fmt.Fprintln(OutputFile3, VLPChain)
 
+	OutputFile4, err := os.Create("Reward-Chain.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer OutputFile4.Close()
+	_, _ = fmt.Fprintln(OutputFile4, Reward)
+
+	fmt.Println("There are ", len(LPChain), "addresses that have LP")
+	fmt.Println("There are ", len(CamelChain), "addresses that have Camels")
 	fmt.Println("There are only ", len(VLPChain), "addresses that are eligible for rewards")
 }

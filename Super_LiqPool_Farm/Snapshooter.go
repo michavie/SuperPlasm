@@ -19,6 +19,11 @@ var (
 
 type ElrondAddress string
 
+type SuperFarmReward struct {
+	Address ElrondAddress
+	Reward  *p.Decimal
+}
+
 type SuperVLP struct {
 	Address ElrondAddress
 	VLP     *p.Decimal
@@ -40,7 +45,7 @@ func OnPage(Link string) string {
 		log.Fatal(err)
 	}
 	content, err := ioutil.ReadAll(res.Body)
-	res.Body.Close()
+	_ = res.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
