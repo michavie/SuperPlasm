@@ -7,7 +7,7 @@ import (
 
 var (
 	SuperEgldLPDecimals   = int64(18)
-	SuperFarmRewardAmount = int64(1650)
+	SuperFarmRewardAmount = int64(1665)
 )
 
 func ConvertAtomicUnits(Number string) *p.Decimal {
@@ -64,7 +64,12 @@ func CamelProcent(Camel *p.Decimal) *p.Decimal {
 		Bonus           = p.NFI(10)
 	)
 
-	CamelTotalBonus = mt.MULxc(Camel, Bonus)
+	if mt.DecimalGreaterThanOrEqual(Camel, p.NFI(1)) == true {
+		CamelTotalBonus = Bonus
+	} else {
+		CamelTotalBonus = p.NFI(1)
+	}
+	//CamelTotalBonus = mt.MULxc(Camel, Bonus)
 	return CamelTotalBonus
 
 }
@@ -84,6 +89,42 @@ func VirtualLP(LpAmount, CamelAmount *p.Decimal) *p.Decimal {
 
 	Result := mt.MULxc(LpAmount, Weight)
 	return mt.TruncateCustom(Result, 18)
+}
+
+func SuperPowerComputer(SuperAmount, LPAmount *p.Decimal) *p.Decimal {
+	var SP = new(p.Decimal)
+	if mt.DecimalLessThanOrEqual(LPAmount, p.NFS("1")) == true {
+		if mt.DecimalLessThan(SuperAmount, p.NFS("1")) == true {
+			SP = p.NFS("0")
+		} else {
+			SP = mt.TruncateCustom(SuperAmount, 0)
+		}
+	} else {
+		SP1 := mt.MULxc(SuperAmount, LPAmount)
+		if mt.DecimalGreaterThan(SP1, p.NFS("1")) == true {
+			SP = SP1
+		} else {
+			SP = p.NFS("0")
+		}
+	}
+
+	return mt.TruncateCustom(SP, 0)
+}
+
+func SuperPowerPercentComputer(Chain []SuperPower) []SuperPowerPercent {
+	var (
+		SPSum      = new(p.Decimal)
+		FinalChain []SuperPowerPercent
+	)
+	for i := 0; i < len(Chain); i++ {
+		SPSum = mt.ADDxc(SPSum, Chain[i].SuperPower)
+	}
+	for i := 0; i < len(Chain); i++ {
+		Percent := mt.TruncateCustom(mt.DIVxc(mt.MULxc(Chain[i].SuperPower, p.NFS("100")), SPSum), 18)
+		Unit := SuperPowerPercent{SuperPower{Chain[i].Address, Chain[i].SuperPower}, Percent}
+		FinalChain = append(FinalChain, Unit)
+	}
+	return FinalChain
 }
 
 func SuperRewardComputer(Chain1 []SuperVLP, RewardAmount *p.Decimal) []SuperFarmReward {

@@ -3,18 +3,18 @@ package Super_LiqPool_Farm
 import (
 	mt "SuperPlasm/SuperMath"
 	"encoding/json"
-	"fmt"
 	p "github.com/Crypt0plasm/Firefly-APD"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 )
 
 var (
+	SUPER       = "https://api.elrond.com/tokens/SUPER-507aa6/accounts?size=10000"
 	SuperEgldLP = "https://api.elrond.com/tokens/SUPEREGLD-a793b9/accounts?size=10000"
 	SuperCamel  = "https://api.elrond.com/nfts/SCYMETA-3104d5-01/owners?size=10000"
 	ExA1        = ElrondAddress("erd1jd7gxdrv7qkghmm4afzk9hy6pw4qa5cfwt0nl7tmyhqujktc27rskzqmke")
+	ExA2        = ElrondAddress("erd1qqqqqqqqqqqqqpgqdx6z3sauy49c5k6c6lwhjqclrfwlxlud2jpsvwj5dp")
 )
 
 type ElrondAddress string
@@ -24,9 +24,24 @@ type SuperFarmReward struct {
 	Reward  *p.Decimal
 }
 
+type SuperPower struct {
+	Address    ElrondAddress
+	SuperPower *p.Decimal
+}
+
+type SuperPowerPercent struct {
+	Main              SuperPower
+	SuperPowerPercent *p.Decimal
+}
+
 type SuperVLP struct {
 	Address ElrondAddress
 	VLP     *p.Decimal
+}
+
+type Super struct {
+	Address ElrondAddress
+	Balance string
 }
 
 type SuperLP struct {
@@ -52,15 +67,11 @@ func OnPage(Link string) string {
 	return string(content)
 }
 
-func Snapshot(Link, OutputName string) {
-	OutputFile, err := os.Create(OutputName)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer OutputFile.Close()
-
-	SnapshotContent := OnPage(Link)
-	_, _ = fmt.Fprintln(OutputFile, SnapshotContent)
+func CreateSuperChain() []Super {
+	var OutputChain []Super
+	SS := OnPage(SUPER)
+	_ = json.Unmarshal([]byte(SS), &OutputChain)
+	return OutputChain
 }
 
 func CreateLPChain() []SuperLP {
@@ -88,6 +99,38 @@ func GetCamelAmount(Address ElrondAddress, Chain []CamelAmount) string {
 		}
 	}
 	return Result
+}
+
+func GetSuperLPAmount(Address ElrondAddress, Chain []SuperLP) string {
+	var Result string
+	for i := 0; i < len(Chain); i++ {
+		if Chain[i].Address == Address {
+			Result = Chain[i].Balance
+			break
+		} else {
+			Result = "0"
+		}
+	}
+	return Result
+}
+
+func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
+	var FinalChain []SuperPower
+	for i := 0; i < len(Chain1); i++ {
+		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 {
+			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
+			//FinalChain = append(FinalChain, Unit)
+		} else {
+			SuperAmount := ConvertAtomicUnits(Chain1[i].Balance)
+			LPAmount := ConvertAtomicUnits(GetSuperLPAmount(Chain1[i].Address, Chain2))
+			SP := SuperPowerComputer(SuperAmount, LPAmount)
+			if mt.DecimalGreaterThan(SP, p.NFS("0")) == true {
+				Unit := SuperPower{Chain1[i].Address, SP}
+				FinalChain = append(FinalChain, Unit)
+			}
+		}
+	}
+	return FinalChain
 }
 
 func CreateVLPChain(Chain1 []SuperLP, Chain2 []CamelAmount) []SuperVLP {
