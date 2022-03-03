@@ -74,7 +74,7 @@ func CreateSuperChain() []Super {
 	return OutputChain
 }
 
-func CreateLPChain() []SuperLP {
+func CreateSuperLPChain() []SuperLP {
 	var OutputChain []SuperLP
 	SS := OnPage(SuperEgldLP)
 	_ = json.Unmarshal([]byte(SS), &OutputChain)

@@ -6,8 +6,7 @@ import (
 )
 
 var (
-	SuperEgldLPDecimals   = int64(18)
-	SuperFarmRewardAmount = int64(1665)
+	SuperEgldLPDecimals = int64(18)
 )
 
 func ConvertAtomicUnits(Number string) *p.Decimal {
@@ -141,4 +140,32 @@ func SuperRewardComputer(Chain1 []SuperVLP, RewardAmount *p.Decimal) []SuperFarm
 		FinalChain = append(FinalChain, Unit)
 	}
 	return FinalChain
+}
+
+func SortSuperPowerPercent(Chain []SuperPowerPercent) []SuperPowerPercent {
+	var (
+		SortedChain []SuperPowerPercent
+	)
+	GetMaxElement := func(Chain []SuperPowerPercent) int {
+		Max := 0
+		for i := 0; i < len(Chain)-2; i++ {
+			if mt.DecimalGreaterThanOrEqual(Chain[i].SuperPowerPercent, Chain[Max].SuperPowerPercent) == true {
+				Max = i
+			}
+		}
+		return Max
+	}
+	Chain2Sort := Chain
+
+	for i := 0; i < len(Chain); i++ {
+		Biggest := GetMaxElement(Chain2Sort)
+		Unit := SuperPowerPercent{Chain2Sort[Biggest].Main, Chain2Sort[Biggest].SuperPowerPercent}
+		SortedChain = append(SortedChain, Unit)
+
+		//Removing biggest element
+		//This syntax removes from a slice the element on position Biggest
+		Chain2Sort = append(Chain2Sort[:Biggest], Chain2Sort[Biggest+1:]...)
+
+	}
+	return SortedChain
 }
