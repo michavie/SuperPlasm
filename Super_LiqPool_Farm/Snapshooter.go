@@ -15,6 +15,7 @@ var (
 	SuperCamel  = "https://api.elrond.com/nfts/SCYMETA-3104d5-01/owners?size=10000"
 	ExA1        = ElrondAddress("erd1jd7gxdrv7qkghmm4afzk9hy6pw4qa5cfwt0nl7tmyhqujktc27rskzqmke")
 	ExA2        = ElrondAddress("erd1qqqqqqqqqqqqqpgqdx6z3sauy49c5k6c6lwhjqclrfwlxlud2jpsvwj5dp")
+	ExA3        = ElrondAddress("erd1qqqqqqqqqqqqqpgqawkm2tlyyz6vtg02fcr5w02dyejp8yrw0y8qlucnj2")
 )
 
 type ElrondAddress string
@@ -117,7 +118,7 @@ func GetSuperLPAmount(Address ElrondAddress, Chain []SuperLP) string {
 func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 	var FinalChain []SuperPower
 	for i := 0; i < len(Chain1); i++ {
-		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 {
+		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
 			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
 			//FinalChain = append(FinalChain, Unit)
 		} else {
