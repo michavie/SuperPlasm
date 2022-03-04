@@ -20,7 +20,7 @@ func MetaKosonicSuperPowerPromille(SuperAmount *p.Decimal) *p.Decimal {
 	var (
 		ProMille = new(p.Decimal)
 
-		T00 = p.NFI(1)
+		T00 = p.NFI(0)
 		T01 = p.NFI(10)
 		T02 = p.NFI(25)
 		T03 = p.NFI(50)
@@ -86,56 +86,68 @@ func MetaKosonicSuperPowerPromille(SuperAmount *p.Decimal) *p.Decimal {
 	//Rounding SuperAmount to IntegerValue
 	SA := mt.TruncateCustom(SuperAmount, 0)
 
-	if mt.DecimalGreaterThanOrEqual(SA, T00) == true && mt.DecimalLessThanOrEqual(SA, T01) == true {
-		ProMille = mt.SUBxc(TP01, mt.DIVxc(mt.MULxc(SA, TPW0), T01))
+	ProMilleFunc := func(StartThreshold, EndThreshold, TopPromille, WidthPromille, Value *p.Decimal) *p.Decimal {
+		var (
+			V1, V2, V3, V4, PM = new(p.Decimal), new(p.Decimal), new(p.Decimal), new(p.Decimal), new(p.Decimal)
+		)
+		V1 = mt.SUBxc(Value, StartThreshold)
+		V2 = mt.SUBxc(EndThreshold, StartThreshold)
+		V3 = mt.MULxc(V1, WidthPromille)
+		V4 = mt.DIVxc(V3, V2)
+		PM = mt.SUBxc(TopPromille, V4)
+		return PM
+	}
+
+	if mt.DecimalGreaterThan(SA, T00) == true && mt.DecimalLessThanOrEqual(SA, T01) == true {
+		ProMille = ProMilleFunc(T00, T01, TP01, TPW0, SA)
 	} else if mt.DecimalGreaterThan(SA, T01) == true && mt.DecimalLessThanOrEqual(SA, T02) == true {
-		ProMille = mt.SUBxc(TP02, mt.DIVxc(mt.MULxc(SA, TPW1), T02))
+		ProMille = ProMilleFunc(T01, T02, TP02, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T02) == true && mt.DecimalLessThanOrEqual(SA, T03) == true {
-		ProMille = mt.SUBxc(TP03, mt.DIVxc(mt.MULxc(SA, TPW1), T03))
+		ProMille = ProMilleFunc(T02, T03, TP03, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T03) == true && mt.DecimalLessThanOrEqual(SA, T04) == true {
-		ProMille = mt.SUBxc(TP04, mt.DIVxc(mt.MULxc(SA, TPW1), T04))
+		ProMille = ProMilleFunc(T03, T04, TP04, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T04) == true && mt.DecimalLessThanOrEqual(SA, T05) == true {
-		ProMille = mt.SUBxc(TP05, mt.DIVxc(mt.MULxc(SA, TPW1), T05))
+		ProMille = ProMilleFunc(T04, T05, TP05, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T05) == true && mt.DecimalLessThanOrEqual(SA, T06) == true {
-		ProMille = mt.SUBxc(TP06, mt.DIVxc(mt.MULxc(SA, TPW1), T06))
+		ProMille = ProMilleFunc(T05, T06, TP06, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T06) == true && mt.DecimalLessThanOrEqual(SA, T07) == true {
-		ProMille = mt.SUBxc(TP07, mt.DIVxc(mt.MULxc(SA, TPW1), T07))
+		ProMille = ProMilleFunc(T06, T07, TP07, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T07) == true && mt.DecimalLessThanOrEqual(SA, T08) == true {
-		ProMille = mt.SUBxc(TP08, mt.DIVxc(mt.MULxc(SA, TPW1), T08))
+		ProMille = ProMilleFunc(T07, T08, TP08, TPW1, SA)
 	} else if mt.DecimalGreaterThan(SA, T08) == true && mt.DecimalLessThanOrEqual(SA, T09) == true {
-		ProMille = mt.SUBxc(TP09, mt.DIVxc(mt.MULxc(SA, TPW2), T09))
+		ProMille = ProMilleFunc(T08, T09, TP09, TPW2, SA)
 	} else if mt.DecimalGreaterThan(SA, T09) == true && mt.DecimalLessThanOrEqual(SA, T10) == true {
-		ProMille = mt.SUBxc(TP10, mt.DIVxc(mt.MULxc(SA, TPW3), T10))
+		ProMille = ProMilleFunc(T09, T10, TP10, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T10) == true && mt.DecimalLessThanOrEqual(SA, T11) == true {
-		ProMille = mt.SUBxc(TP11, mt.DIVxc(mt.MULxc(SA, TPW3), T11))
+		ProMille = ProMilleFunc(T10, T11, TP11, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T11) == true && mt.DecimalLessThanOrEqual(SA, T12) == true {
-		ProMille = mt.SUBxc(TP12, mt.DIVxc(mt.MULxc(SA, TPW3), T12))
+		ProMille = ProMilleFunc(T11, T12, TP12, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T12) == true && mt.DecimalLessThanOrEqual(SA, T13) == true {
-		ProMille = mt.SUBxc(TP13, mt.DIVxc(mt.MULxc(SA, TPW3), T13))
+		ProMille = ProMilleFunc(T12, T13, TP13, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T13) == true && mt.DecimalLessThanOrEqual(SA, T14) == true {
-		ProMille = mt.SUBxc(TP14, mt.DIVxc(mt.MULxc(SA, TPW3), T14))
+		ProMille = ProMilleFunc(T13, T14, TP14, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T14) == true && mt.DecimalLessThanOrEqual(SA, T15) == true {
-		ProMille = mt.SUBxc(TP15, mt.DIVxc(mt.MULxc(SA, TPW3), T15))
+		ProMille = ProMilleFunc(T14, T15, TP15, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T15) == true && mt.DecimalLessThanOrEqual(SA, T16) == true {
-		ProMille = mt.SUBxc(TP16, mt.DIVxc(mt.MULxc(SA, TPW3), T16))
+		ProMille = ProMilleFunc(T15, T16, TP16, TPW3, SA)
 	} else if mt.DecimalGreaterThan(SA, T16) == true && mt.DecimalLessThanOrEqual(SA, T17) == true {
-		ProMille = mt.SUBxc(TP17, mt.DIVxc(mt.MULxc(SA, TPW4), T17))
+		ProMille = ProMilleFunc(T16, T17, TP17, TPW4, SA)
 	} else if mt.DecimalGreaterThan(SA, T17) == true && mt.DecimalLessThanOrEqual(SA, T18) == true {
-		ProMille = mt.SUBxc(TP18, mt.DIVxc(mt.MULxc(SA, TPW5), T18))
+		ProMille = ProMilleFunc(T17, T18, TP18, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T18) == true && mt.DecimalLessThanOrEqual(SA, T19) == true {
-		ProMille = mt.SUBxc(TP19, mt.DIVxc(mt.MULxc(SA, TPW5), T19))
+		ProMille = ProMilleFunc(T18, T19, TP19, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T19) == true && mt.DecimalLessThanOrEqual(SA, T20) == true {
-		ProMille = mt.SUBxc(TP20, mt.DIVxc(mt.MULxc(SA, TPW5), T20))
+		ProMille = ProMilleFunc(T19, T20, TP20, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T20) == true && mt.DecimalLessThanOrEqual(SA, T21) == true {
-		ProMille = mt.SUBxc(TP21, mt.DIVxc(mt.MULxc(SA, TPW5), T21))
+		ProMille = ProMilleFunc(T20, T21, TP21, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T21) == true && mt.DecimalLessThanOrEqual(SA, T22) == true {
-		ProMille = mt.SUBxc(TP22, mt.DIVxc(mt.MULxc(SA, TPW5), T22))
+		ProMille = ProMilleFunc(T21, T22, TP22, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T22) == true && mt.DecimalLessThanOrEqual(SA, T23) == true {
-		ProMille = mt.SUBxc(TP23, mt.DIVxc(mt.MULxc(SA, TPW5), T23))
+		ProMille = ProMilleFunc(T22, T23, TP23, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T23) == true && mt.DecimalLessThanOrEqual(SA, T24) == true {
-		ProMille = mt.SUBxc(TP24, mt.DIVxc(mt.MULxc(SA, TPW5), T24))
+		ProMille = ProMilleFunc(T23, T24, TP24, TPW5, SA)
 	} else if mt.DecimalGreaterThan(SA, T24) == true && mt.DecimalLessThanOrEqual(SA, STS) == true {
-		ProMille = mt.SUBxc(TP25, mt.DIVxc(mt.MULxc(SA, TPW5), STS))
+		ProMille = ProMilleFunc(T24, STS, TP25, TPW5, SA)
 	}
 
 	PM := mt.TruncateCustom(ProMille, 0)
