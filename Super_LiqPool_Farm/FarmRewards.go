@@ -262,7 +262,7 @@ func KosonicSuperPowerComputer(SuperAmount, LPAmount *p.Decimal) *p.Decimal {
 		}
 	}
 
-	return mt.TruncateCustom(KSP, 6)
+	return mt.TruncateCustom(KSP, 0)
 }
 
 //Computes Rewards earned by VirtualLP using a given Amount of Reward per Day
