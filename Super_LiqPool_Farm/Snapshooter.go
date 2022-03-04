@@ -240,7 +240,7 @@ func CreateMetaKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []MKSupe
 			IzAddressMeta := IzMeta(Chain1[i].Address, CamelChainz)
 
 			if IzAddressMeta == true {
-				MetaKosonicPromille = MetaKosonicSuperPowerPromille2(SuperAmount)
+				MetaKosonicPromille = MetaKosonicSuperPowerPromille(SuperAmount)
 				MetaSuperAmount = mt.TruncateCustom(mt.MULx(20, SuperAmount, mt.ADDx(20, p.NFI(1), mt.DIVx(20, MetaKosonicPromille, p.NFI(1000)))), 0)
 
 			} else {
