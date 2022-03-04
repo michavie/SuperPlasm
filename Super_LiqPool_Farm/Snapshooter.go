@@ -143,7 +143,12 @@ func GetSuperLPAmount(Address ElrondAddress, Chain []SuperLP) string {
 func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 	var FinalChain []SuperPower
 	for i := 0; i < len(Chain1); i++ {
-		fmt.Println("Working on Super Power iteration", i)
+
+		BaseStringPoint := "Iteration"
+		//StringPoint := strings.Repeat(".",i)
+		//StringToPrint := BaseStringPoint + StringPoint
+		fmt.Print("\r", BaseStringPoint, " ", i)
+
 		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
 			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
 			//FinalChain = append(FinalChain, Unit)
@@ -157,13 +162,19 @@ func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 			}
 		}
 	}
+	fmt.Println("")
 	return FinalChain
 }
 
 func CreateKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 	var FinalChain []SuperPower
 	for i := 0; i < len(Chain1); i++ {
-		fmt.Println("Working on Kosonic Super Power iteration", i)
+
+		BaseStringPoint := "Iteration"
+		//StringPoint := strings.Repeat(".",i)
+		//StringToPrint := BaseStringPoint + StringPoint
+		fmt.Print("\r", BaseStringPoint, " ", i)
+
 		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
 			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
 			//FinalChain = append(FinalChain, Unit)
@@ -177,6 +188,7 @@ func CreateKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower
 			}
 		}
 	}
+	fmt.Println("")
 	return FinalChain
 }
 
@@ -189,8 +201,34 @@ func CreateMetaKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []MKSupe
 		MetaKosonicPromille = new(p.Decimal)
 		MKSP                = new(p.Decimal)
 	)
+	CamelChainz := CreateCamelChain()
+
+	IzMeta := func(Addy ElrondAddress, Chain []CamelAmount) bool {
+		var (
+			IzzMeta bool
+			IzCamel bool
+		)
+
+		CamelValue := GetCamelAmount(Addy, Chain)
+		if mt.DecimalGreaterThanOrEqual(p.NFS(CamelValue), p.NFS("1")) == true {
+			IzCamel = true
+		} else {
+			IzCamel = false
+		}
+
+		if IzCamel == true {
+			IzzMeta = true
+		}
+		return IzzMeta
+	}
+
 	for i := 0; i < len(Chain1); i++ {
-		fmt.Println("Working on MK Super Power iteration", i)
+
+		BaseStringPoint := "Iteration"
+		//StringPoint := strings.Repeat(".",i)
+		//StringToPrint := BaseStringPoint + StringPoint
+		fmt.Print("\r", BaseStringPoint, " ", i)
+
 		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
 			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
 			//FinalChain = append(FinalChain, Unit)
@@ -198,11 +236,12 @@ func CreateMetaKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []MKSupe
 			//Super Amount is taken as integer, therefore truncated.
 			SuperAmount = mt.TruncateCustom(ConvertAtomicUnits(Chain1[i].Balance), 0)
 			LPAmount = ConvertAtomicUnits(GetSuperLPAmount(Chain1[i].Address, Chain2))
-			IzAddressMeta := IzMeta(Chain1[i].Address)
+
+			IzAddressMeta := IzMeta(Chain1[i].Address, CamelChainz)
 
 			if IzAddressMeta == true {
-				MetaKosonicPromille = MetaKosonicSuperPowerPromille(SuperAmount)
-				MetaSuperAmount = mt.MULxc(SuperAmount, mt.ADDxc(p.NFI(1), mt.DIVxc(MetaKosonicPromille, p.NFI(1000))))
+				MetaKosonicPromille = MetaKosonicSuperPowerPromille2(SuperAmount)
+				MetaSuperAmount = mt.TruncateCustom(mt.MULx(20, SuperAmount, mt.ADDx(20, p.NFI(1), mt.DIVx(20, MetaKosonicPromille, p.NFI(1000)))), 0)
 
 			} else {
 				MetaSuperAmount = SuperAmount
@@ -213,6 +252,7 @@ func CreateMetaKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []MKSupe
 			FinalChain = append(FinalChain, Unit)
 		}
 	}
+	fmt.Println("")
 	return FinalChain
 }
 

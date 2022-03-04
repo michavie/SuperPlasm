@@ -77,7 +77,7 @@ func SnapshooterPrinterSuperCamel() []fr.CamelAmount {
 
 func SnapshooterPrinterSuperVirtualLP(Chain1 []fr.SuperLP, Chain2 []fr.CamelAmount) []fr.SuperVLP {
 	fmt.Println("")
-	fmt.Println("Computing  SUPER-VLP Amounts ...")
+	fmt.Println("Computing SUPER-VLP Amounts ...")
 	Start := time.Now()
 	VLPChain := fr.CreateVLPChain(Chain1, Chain2)
 	Elapsed := time.Since(Start)
@@ -121,7 +121,7 @@ func SnapshooterPrinterSuperVirtualLPRewards(Chain1 []fr.SuperVLP, Reward int64)
 
 func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.SuperPowerPercent {
 	fmt.Println("")
-	fmt.Println("Computing  SUPER-Power Chain ...")
+	fmt.Println("Computing SUPER-Power Chain ...")
 	Start1 := time.Now()
 	SuperPowerChain := fr.CreateSuperPowerChain(Chain1, Chain2)
 	Elapsed1 := time.Since(Start1)
@@ -158,21 +158,21 @@ func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.S
 
 func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.SuperPowerPercent {
 	fmt.Println("")
-	fmt.Println("Computing  Kosonic SUPER-Power Chain ...")
+	fmt.Println("Computing Kosonic SUPER-Power Chain ...")
 	Start1 := time.Now()
 	KosonicSuperPowerChain := fr.CreateKosonicSuperPowerChain(Chain1, Chain2)
 	Elapsed1 := time.Since(Start1)
 	fmt.Println("Done computing  Kosonic SUPER-Power Chain, time required", Elapsed1)
 	fmt.Println("===")
 
-	fmt.Println("Computing  Kosonic SUPER-Power-Percent Chain ...")
+	fmt.Println("Computing Kosonic SUPER-Power-Percent Chain ...")
 	Start2 := time.Now()
 	KosonicSuperPowerPercentChain := fr.SuperPowerPercentComputer(KosonicSuperPowerChain)
 	Elapsed2 := time.Since(Start2)
 	fmt.Println("Done computing  Kosonic SUPER-Power-Percent Chain, time required", Elapsed2)
 	fmt.Println("===")
 
-	fmt.Println("Sorting  Kosonic SUPER-Power-Percent Chain ...")
+	fmt.Println("Sorting Kosonic SUPER-Power-Percent Chain ...")
 	Start3 := time.Now()
 	SortedKosonicSuperPowerPercentChain := fr.SortSuperPowerPercent(KosonicSuperPowerPercentChain)
 	Elapsed3 := time.Since(Start3)
@@ -195,21 +195,21 @@ func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP)
 
 func SnapshooterPrinterMetaKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.MKSuperPowerPercent {
 	fmt.Println("")
-	fmt.Println("Computing  Meta-Kosonic SUPER-Power Chain ...")
+	fmt.Println("Computing Meta-Kosonic SUPER-Power Chain ...")
 	Start1 := time.Now()
 	MetaKosonicSuperPowerChain := fr.CreateMetaKosonicSuperPowerChain(Chain1, Chain2)
 	Elapsed1 := time.Since(Start1)
 	fmt.Println("Done computing  Meta-Kosonic-SUPER-Power Chain, time required", Elapsed1)
 	fmt.Println("===")
 
-	fmt.Println("Computing  Meta-Kosonic SUPER-Power-Percent Chain ...")
+	fmt.Println("Computing Meta-Kosonic SUPER-Power-Percent Chain ...")
 	Start2 := time.Now()
 	MetaKosonicSuperPowerPercentChain := fr.MKSuperPowerPercentComputer(MetaKosonicSuperPowerChain)
 	Elapsed2 := time.Since(Start2)
 	fmt.Println("Done computing  Meta-Kosonic SUPER-Power-Percent Chain, time required", Elapsed2)
 	fmt.Println("===")
 
-	fmt.Println("Sorting  Meta-Kosonic SUPER-Power-Percent Chain ...")
+	fmt.Println("Sorting Meta-Kosonic SUPER-Power-Percent Chain ...")
 	Start3 := time.Now()
 	SortedMetaKosonicSuperPowerPercentChain := fr.SortMKSuperPowerPercent(MetaKosonicSuperPowerPercentChain)
 	Elapsed3 := time.Since(Start3)

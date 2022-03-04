@@ -15,26 +15,6 @@ func ConvertAtomicUnits(Number string) *p.Decimal {
 	return Result
 }
 
-// Returns if Address is Meta
-func IzMeta(Addy ElrondAddress) bool {
-	var (
-		IzzMeta bool
-		IzCamel bool
-	)
-	CamelChainz := CreateCamelChain()
-	CamelValue := GetCamelAmount(Addy, CamelChainz)
-	if mt.DecimalGreaterThanOrEqual(p.NFS(CamelValue), p.NFS("1")) == true {
-		IzCamel = true
-	} else {
-		IzCamel = false
-	}
-
-	if IzCamel == true {
-		IzzMeta = true
-	}
-	return IzzMeta
-}
-
 //Returns the MetaKosonicSuperPowerPromille used to Compute the Meta-Kosonic-Super-Power
 func MetaKosonicSuperPowerPromille(SuperAmount *p.Decimal) *p.Decimal {
 	var (
@@ -158,7 +138,133 @@ func MetaKosonicSuperPowerPromille(SuperAmount *p.Decimal) *p.Decimal {
 		ProMille = mt.SUBxc(TP25, mt.DIVxc(mt.MULxc(SA, TPW5), STS))
 	}
 
-	PM := mt.TruncateCustom(ProMille, 18)
+	PM := mt.TruncateCustom(ProMille, 0)
+	return PM
+}
+
+func MetaKosonicSuperPowerPromille2(SuperAmount *p.Decimal) *p.Decimal {
+	var (
+		ProMille = new(p.Decimal)
+
+		T00 = p.NFI(1)
+		T01 = p.NFI(10)
+		T02 = p.NFI(25)
+		T03 = p.NFI(50)
+		T04 = p.NFI(75)
+		T05 = p.NFI(100)
+		T06 = p.NFI(250)
+		T07 = p.NFI(500)
+		T08 = p.NFI(750)
+		T09 = p.NFI(1000)
+		T10 = p.NFI(2500)
+		T11 = p.NFI(5000)
+		T12 = p.NFI(7500)
+		T13 = p.NFI(10000)
+		T14 = p.NFI(25000)
+		T15 = p.NFI(50000)
+		T16 = p.NFI(75000)
+		T17 = p.NFI(100000)
+		T18 = p.NFI(250000)
+		T19 = p.NFI(500000)
+		T20 = p.NFI(750000)
+		T21 = p.NFI(1000000)
+		T22 = p.NFI(2500000)
+		T23 = p.NFI(5000000)
+		T24 = p.NFI(7500000)
+		STS = p.NFI(10000000) //SuperTotalSupply.
+
+		TP01 = p.NFI(10000)
+		TP02 = p.NFI(8000)
+		TP03 = p.NFI(7000)
+		TP04 = p.NFI(6000)
+		TP05 = p.NFI(5000)
+		TP06 = p.NFI(4000)
+		TP07 = p.NFI(3000)
+		TP08 = p.NFI(2000)
+		TP09 = p.NFI(1000)
+
+		TP10 = mt.DIVxc(TP02, p.NFI(10)) //800
+		TP11 = mt.DIVxc(TP03, p.NFI(10)) //700
+		TP12 = mt.DIVxc(TP04, p.NFI(10)) //600
+		TP13 = mt.DIVxc(TP05, p.NFI(10)) //500
+		TP14 = mt.DIVxc(TP06, p.NFI(10)) //400
+		TP15 = mt.DIVxc(TP07, p.NFI(10)) //300
+		TP16 = mt.DIVxc(TP08, p.NFI(10)) //200
+		TP17 = mt.DIVxc(TP09, p.NFI(10)) //100
+
+		TP18 = mt.DIVxc(TP10, p.NFI(10)) //80
+		TP19 = mt.DIVxc(TP11, p.NFI(10)) //70
+		TP20 = mt.DIVxc(TP12, p.NFI(10)) //60
+		TP21 = mt.DIVxc(TP13, p.NFI(10)) //50
+		TP22 = mt.DIVxc(TP14, p.NFI(10)) //40
+		TP23 = mt.DIVxc(TP15, p.NFI(10)) //30
+		TP24 = mt.DIVxc(TP16, p.NFI(10)) //20
+		TP25 = mt.DIVxc(TP17, p.NFI(10)) //10
+
+		TPW0 = p.NFI(2000)
+		TPW1 = p.NFI(1000)
+		TPW2 = mt.DIVxc(TPW0, p.NFI(10)) //200
+		TPW3 = mt.DIVxc(TPW1, p.NFI(10)) //100
+		TPW4 = mt.DIVxc(TPW2, p.NFI(10)) //20
+		TPW5 = mt.DIVxc(TPW3, p.NFI(10)) //10
+	)
+
+	//Rounding SuperAmount to IntegerValue
+	SA := mt.TruncateCustom(SuperAmount, 0)
+
+	if mt.DecimalGreaterThanOrEqual(SA, T00) == true && mt.DecimalLessThanOrEqual(SA, T01) == true {
+		ProMille = mt.SUBx(20, TP01, mt.DIVxc(mt.MULx(20, SA, TPW0), T01))
+	} else if mt.DecimalGreaterThan(SA, T01) == true && mt.DecimalLessThanOrEqual(SA, T02) == true {
+		ProMille = mt.SUBx(20, TP02, mt.DIVxc(mt.MULx(20, SA, TPW1), T02))
+	} else if mt.DecimalGreaterThan(SA, T02) == true && mt.DecimalLessThanOrEqual(SA, T03) == true {
+		ProMille = mt.SUBx(20, TP03, mt.DIVxc(mt.MULx(20, SA, TPW1), T03))
+	} else if mt.DecimalGreaterThan(SA, T03) == true && mt.DecimalLessThanOrEqual(SA, T04) == true {
+		ProMille = mt.SUBx(20, TP04, mt.DIVxc(mt.MULx(20, SA, TPW1), T04))
+	} else if mt.DecimalGreaterThan(SA, T04) == true && mt.DecimalLessThanOrEqual(SA, T05) == true {
+		ProMille = mt.SUBx(20, TP05, mt.DIVxc(mt.MULx(20, SA, TPW1), T05))
+	} else if mt.DecimalGreaterThan(SA, T05) == true && mt.DecimalLessThanOrEqual(SA, T06) == true {
+		ProMille = mt.SUBx(20, TP06, mt.DIVxc(mt.MULx(20, SA, TPW1), T06))
+	} else if mt.DecimalGreaterThan(SA, T06) == true && mt.DecimalLessThanOrEqual(SA, T07) == true {
+		ProMille = mt.SUBx(20, TP07, mt.DIVxc(mt.MULx(20, SA, TPW1), T07))
+	} else if mt.DecimalGreaterThan(SA, T07) == true && mt.DecimalLessThanOrEqual(SA, T08) == true {
+		ProMille = mt.SUBx(20, TP08, mt.DIVxc(mt.MULx(20, SA, TPW1), T08))
+	} else if mt.DecimalGreaterThan(SA, T08) == true && mt.DecimalLessThanOrEqual(SA, T09) == true {
+		ProMille = mt.SUBx(20, TP09, mt.DIVxc(mt.MULx(20, SA, TPW2), T09))
+	} else if mt.DecimalGreaterThan(SA, T09) == true && mt.DecimalLessThanOrEqual(SA, T10) == true {
+		ProMille = mt.SUBx(20, TP10, mt.DIVxc(mt.MULx(20, SA, TPW3), T10))
+	} else if mt.DecimalGreaterThan(SA, T10) == true && mt.DecimalLessThanOrEqual(SA, T11) == true {
+		ProMille = mt.SUBx(20, TP11, mt.DIVxc(mt.MULx(20, SA, TPW3), T11))
+	} else if mt.DecimalGreaterThan(SA, T11) == true && mt.DecimalLessThanOrEqual(SA, T12) == true {
+		ProMille = mt.SUBx(20, TP12, mt.DIVxc(mt.MULx(20, SA, TPW3), T12))
+	} else if mt.DecimalGreaterThan(SA, T12) == true && mt.DecimalLessThanOrEqual(SA, T13) == true {
+		ProMille = mt.SUBx(20, TP13, mt.DIVxc(mt.MULx(20, SA, TPW3), T13))
+	} else if mt.DecimalGreaterThan(SA, T13) == true && mt.DecimalLessThanOrEqual(SA, T14) == true {
+		ProMille = mt.SUBx(20, TP14, mt.DIVxc(mt.MULx(20, SA, TPW3), T14))
+	} else if mt.DecimalGreaterThan(SA, T14) == true && mt.DecimalLessThanOrEqual(SA, T15) == true {
+		ProMille = mt.SUBx(20, TP15, mt.DIVxc(mt.MULx(20, SA, TPW3), T15))
+	} else if mt.DecimalGreaterThan(SA, T15) == true && mt.DecimalLessThanOrEqual(SA, T16) == true {
+		ProMille = mt.SUBx(20, TP16, mt.DIVxc(mt.MULx(20, SA, TPW3), T16))
+	} else if mt.DecimalGreaterThan(SA, T16) == true && mt.DecimalLessThanOrEqual(SA, T17) == true {
+		ProMille = mt.SUBx(20, TP17, mt.DIVxc(mt.MULx(20, SA, TPW4), T17))
+	} else if mt.DecimalGreaterThan(SA, T17) == true && mt.DecimalLessThanOrEqual(SA, T18) == true {
+		ProMille = mt.SUBx(20, TP18, mt.DIVxc(mt.MULx(20, SA, TPW5), T18))
+	} else if mt.DecimalGreaterThan(SA, T18) == true && mt.DecimalLessThanOrEqual(SA, T19) == true {
+		ProMille = mt.SUBx(20, TP19, mt.DIVxc(mt.MULx(20, SA, TPW5), T19))
+	} else if mt.DecimalGreaterThan(SA, T19) == true && mt.DecimalLessThanOrEqual(SA, T20) == true {
+		ProMille = mt.SUBx(20, TP20, mt.DIVxc(mt.MULx(20, SA, TPW5), T20))
+	} else if mt.DecimalGreaterThan(SA, T20) == true && mt.DecimalLessThanOrEqual(SA, T21) == true {
+		ProMille = mt.SUBx(20, TP21, mt.DIVxc(mt.MULx(20, SA, TPW5), T21))
+	} else if mt.DecimalGreaterThan(SA, T21) == true && mt.DecimalLessThanOrEqual(SA, T22) == true {
+		ProMille = mt.SUBx(20, TP22, mt.DIVxc(mt.MULx(20, SA, TPW5), T22))
+	} else if mt.DecimalGreaterThan(SA, T22) == true && mt.DecimalLessThanOrEqual(SA, T23) == true {
+		ProMille = mt.SUBx(20, TP23, mt.DIVxc(mt.MULx(20, SA, TPW5), T23))
+	} else if mt.DecimalGreaterThan(SA, T23) == true && mt.DecimalLessThanOrEqual(SA, T24) == true {
+		ProMille = mt.SUBx(20, TP24, mt.DIVxc(mt.MULx(20, SA, TPW5), T24))
+	} else if mt.DecimalGreaterThan(SA, T24) == true && mt.DecimalLessThanOrEqual(SA, STS) == true {
+		ProMille = mt.SUBx(20, TP25, mt.DIVxc(mt.MULx(20, SA, TPW5), STS))
+	}
+
+	PM := mt.TruncateCustom(ProMille, 0)
 	return PM
 }
 
