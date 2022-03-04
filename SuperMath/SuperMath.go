@@ -80,6 +80,7 @@ var (
 //		08  - POWs				Computes x ** y within CryptoplasmPrecisionContext
 //		09  - POWxcs				Computes x ** y with elastic integer precision and custom max decimal precision
 //		10  - POWxc				Computes x ** y with elastic integer precision and 150 max decimal precision
+//		11  - Logarithm				Computes the logarithm from "number" in base "base".
 //	05 Division Functions
 //		01  - DIVx				Divides 2 numbers within a specific precision context
 //		02  - DIVs				Divides 2 numbers within CryptoplasmPrecisionContext
@@ -812,6 +813,47 @@ func POWxc(member1, member2 *p.Decimal) *p.Decimal {
 	result = POWxcs(LOCMaxMathPrecision, member1, member2)
 
 	return result
+}
+
+//================================================
+//
+// Function 04.11 - Logarithm
+//
+// POWxc computes x ** y within an elastically modified Precision LOCPrecisionContext Context
+// Logarithm returns the logarithm from "number" in base "base".
+func Logarithm(base, number *p.Decimal) *p.Decimal {
+	var (
+		LogBase   = new(p.Decimal)
+		LogNumber = new(p.Decimal)
+	)
+	//For LogBase and LogNumber Context precision
+	//2+24 Context precision is enough, for base and number below e^100
+	//if such were the case, a 3+24 (CryptoplasmCurrencyPrecision)
+	//precision would be required. However e^100 has an Integer of 44 digits, namely
+	//26.881.171.418.161.354.484.126.255.515.800.135.873.611.118
+	//So one would have to need to compute the OverSend for a CP amount
+	//bigger than this number to have the need to use a 3+24 context precision,
+	//for computing the first logarithm below. Therefore 2+24 context precision
+	//for both logarithms should be enough
+	//27 Context Precision would be enough to compute the needed logarithm
+	//for many more coins that could ever be minted until the End of the Universe.
+	//if the Cryptoplasm emission would be repeated for every subsequent 524.596.891 Blocks (1 ERA)
+	//1(ERA ~ 107 to 110 Trillion CP).
+
+	//As the resulted LNs have the same number of digits for their integer part
+	//a context Precision of 1+24 would always be enough, as the division would always
+	//look like 1,.....
+
+	//+3 is used, so such a high amount of coins to compute the OverSend for will also
+	//work, and, as has been tested, indeed the code allows it to work.
+
+	NumberDigits := number.NumDigits()
+	IP := 2*LOCCurrencyPrecision + uint32(NumberDigits)
+	cc := c.WithPrecision(IP)
+	_, _ = cc.Ln(LogBase, base)
+	_, _ = cc.Ln(LogNumber, number)
+	CustomLog := DIVx(IP, LogNumber, LogBase)
+	return CustomLog
 }
 
 //================================================

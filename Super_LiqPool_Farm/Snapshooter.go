@@ -134,6 +134,25 @@ func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 	return FinalChain
 }
 
+func CreateKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
+	var FinalChain []SuperPower
+	for i := 0; i < len(Chain1); i++ {
+		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
+			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
+			//FinalChain = append(FinalChain, Unit)
+		} else {
+			SuperAmount := ConvertAtomicUnits(Chain1[i].Balance)
+			LPAmount := ConvertAtomicUnits(GetSuperLPAmount(Chain1[i].Address, Chain2))
+			KSP := KosonicSuperPowerComputer(SuperAmount, LPAmount)
+			if mt.DecimalGreaterThan(KSP, p.NFS("0")) == true {
+				Unit := SuperPower{Chain1[i].Address, KSP}
+				FinalChain = append(FinalChain, Unit)
+			}
+		}
+	}
+	return FinalChain
+}
+
 func CreateVLPChain(Chain1 []SuperLP, Chain2 []CamelAmount) []SuperVLP {
 	var FinalChain []SuperVLP
 	for i := 0; i < len(Chain1); i++ {

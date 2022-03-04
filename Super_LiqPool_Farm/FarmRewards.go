@@ -110,6 +110,28 @@ func SuperPowerComputer(SuperAmount, LPAmount *p.Decimal) *p.Decimal {
 	return mt.TruncateCustom(SP, 0)
 }
 
+func KosonicSuperPowerComputer(SuperAmount, LPAmount *p.Decimal) *p.Decimal {
+	var KSP = new(p.Decimal)
+	LBase := p.NFS("2")
+	if mt.DecimalLessThanOrEqual(LPAmount, LBase) == true {
+		if mt.DecimalLessThan(SuperAmount, p.NFS("1")) == true {
+			KSP = p.NFS("0")
+		} else {
+			KSP = SuperAmount
+		}
+	} else {
+		KosonicLP := mt.TruncateCustom(mt.Logarithm(LBase, LPAmount), 18)
+		SP1 := mt.MULxc(SuperAmount, KosonicLP)
+		if mt.DecimalGreaterThan(SP1, p.NFS("1")) == true {
+			KSP = SP1
+		} else {
+			KSP = p.NFS("0")
+		}
+	}
+
+	return mt.TruncateCustom(KSP, 6)
+}
+
 func SuperPowerPercentComputer(Chain []SuperPower) []SuperPowerPercent {
 	var (
 		SPSum      = new(p.Decimal)

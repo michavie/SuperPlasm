@@ -156,6 +156,43 @@ func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.S
 
 }
 
+func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.SuperPowerPercent {
+	fmt.Println("")
+	fmt.Println("Computing  Kosonic-SUPER-Power Chain ...")
+	Start1 := time.Now()
+	KosonicSuperPowerChain := fr.CreateKosonicSuperPowerChain(Chain1, Chain2)
+	Elapsed1 := time.Since(Start1)
+	fmt.Println("Done computing  Kosonic-SUPER-Power Chain, time required", Elapsed1)
+	fmt.Println("===")
+
+	fmt.Println("Computing  Kosonic SUPER-Power-Percent Chain ...")
+	Start2 := time.Now()
+	KosonicSuperPowerPercentChain := fr.SuperPowerPercentComputer(KosonicSuperPowerChain)
+	Elapsed2 := time.Since(Start2)
+	fmt.Println("Done computing  Kosonic SUPER-Power-Percent Chain, time required", Elapsed2)
+	fmt.Println("===")
+
+	fmt.Println("Sorting  Kosonic SUPER-Power-Percent Chain ...")
+	Start3 := time.Now()
+	SortedKosonicSuperPowerPercentChain := fr.SortSuperPowerPercent(KosonicSuperPowerPercentChain)
+	Elapsed3 := time.Since(Start3)
+	fmt.Println("Done sorting Kosonic SUPER-Power-Percent Chain, time required", Elapsed3)
+	fmt.Println("===")
+
+	fmt.Println("Outputting sorted Kosonic SUPER-Power-Percent-Chain to Chain_Kosonic-SUPER-Power-Percent-sorted.txt")
+	OutputFile, err := os.Create("Chain_Kosonic-SUPER-Power-Percent-sorted.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer OutputFile.Close()
+	_, _ = fmt.Fprintln(OutputFile, SortedKosonicSuperPowerPercentChain)
+	fmt.Println("Done Outputting sorted Kosonic SUPER-Power-Percent-Chain to Chain_Kosonic-SUPER-Power-Percent-sorted.txt")
+	fmt.Println("")
+
+	return SortedKosonicSuperPowerPercentChain
+
+}
+
 func main() {
 	SuperFarmRewardAmount := int64(1665)
 
@@ -165,6 +202,7 @@ func main() {
 	VLPChain := SnapshooterPrinterSuperVirtualLP(SuperLPChain, CamelChain)
 	SnapshooterPrinterSuperVirtualLPRewards(VLPChain, SuperFarmRewardAmount)
 	SortedSuperPowerChain := SnapshooterPrinterSuperPower(SuperChain, SuperLPChain)
+	SnapshooterPrinterKosonicSuperPower(SuperChain, SuperLPChain)
 
 	fmt.Println("")
 	fmt.Println("======RESULTS======")
