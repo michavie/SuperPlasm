@@ -3,6 +3,7 @@ package Super_LiqPool_Farm
 import (
 	mt "SuperPlasm/SuperMath"
 	"encoding/json"
+	"fmt"
 	p "github.com/Crypt0plasm/Firefly-APD"
 	"io/ioutil"
 	"log"
@@ -25,31 +26,55 @@ type SuperFarmReward struct {
 	Reward  *p.Decimal
 }
 
+//1)Super Power Chain
+//Made Chain Type, Balance is in Decimal
 type SuperPower struct {
 	Address    ElrondAddress
 	SuperPower *p.Decimal
 }
 
+//Made Chain Type, Balance is in Decimal
 type SuperPowerPercent struct {
 	Main              SuperPower
 	SuperPowerPercent *p.Decimal
 }
 
+//2)Super Power Chain
+//Made Chain Type, Balance is in Decimal
+type MKSuperPower struct {
+	Address               ElrondAddress
+	Super                 *p.Decimal
+	MetaSuper             *p.Decimal
+	MetaKosonicSuperPower *p.Decimal
+}
+
+//Made Chain Type, Balance is in Decimal
+type MKSuperPowerPercent struct {
+	Main                         MKSuperPower
+	MetaKosonicSuperPowerPercent *p.Decimal
+}
+
+//3)Super Virtual LP Chain
+//Made Chain Type, Balance is in Decimal
 type SuperVLP struct {
 	Address ElrondAddress
 	VLP     *p.Decimal
 }
 
+//4)Snapshotted Chains
+//Snapshot Chain, Balance is in string
 type Super struct {
 	Address ElrondAddress
 	Balance string
 }
 
+//Snapshot Chain, Balance is in string
 type SuperLP struct {
 	Address ElrondAddress
 	Balance string
 }
 
+//Snapshot Chain, Balance is in string
 type CamelAmount struct {
 	Address ElrondAddress
 	Balance string
@@ -118,6 +143,7 @@ func GetSuperLPAmount(Address ElrondAddress, Chain []SuperLP) string {
 func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 	var FinalChain []SuperPower
 	for i := 0; i < len(Chain1); i++ {
+		fmt.Println("Working on Super Power iteration", i)
 		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
 			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
 			//FinalChain = append(FinalChain, Unit)
@@ -137,6 +163,7 @@ func CreateSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 func CreateKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower {
 	var FinalChain []SuperPower
 	for i := 0; i < len(Chain1); i++ {
+		fmt.Println("Working on Kosonic Super Power iteration", i)
 		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
 			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
 			//FinalChain = append(FinalChain, Unit)
@@ -148,6 +175,42 @@ func CreateKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []SuperPower
 				Unit := SuperPower{Chain1[i].Address, KSP}
 				FinalChain = append(FinalChain, Unit)
 			}
+		}
+	}
+	return FinalChain
+}
+
+func CreateMetaKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []MKSuperPower {
+	var (
+		FinalChain          []MKSuperPower
+		SuperAmount         = new(p.Decimal)
+		LPAmount            = new(p.Decimal)
+		MetaSuperAmount     = new(p.Decimal)
+		MetaKosonicPromille = new(p.Decimal)
+		MKSP                = new(p.Decimal)
+	)
+	for i := 0; i < len(Chain1); i++ {
+		fmt.Println("Working on MK Super Power iteration", i)
+		if Chain1[i].Address == ExA1 || Chain1[i].Address == ExA2 || Chain1[i].Address == ExA3 {
+			//Unit := SuperVLP{Chain1[i].Address, p.NFS("0")}
+			//FinalChain = append(FinalChain, Unit)
+		} else {
+			//Super Amount is taken as integer, therefore truncated.
+			SuperAmount = mt.TruncateCustom(ConvertAtomicUnits(Chain1[i].Balance), 0)
+			LPAmount = ConvertAtomicUnits(GetSuperLPAmount(Chain1[i].Address, Chain2))
+			IzAddressMeta := IzMeta(Chain1[i].Address)
+
+			if IzAddressMeta == true {
+				MetaKosonicPromille = MetaKosonicSuperPowerPromille(SuperAmount)
+				MetaSuperAmount = mt.MULxc(SuperAmount, mt.ADDxc(p.NFI(1), mt.DIVxc(MetaKosonicPromille, p.NFI(1000))))
+
+			} else {
+				MetaSuperAmount = SuperAmount
+			}
+			MKSP = KosonicSuperPowerComputer(MetaSuperAmount, LPAmount)
+
+			Unit := MKSuperPower{Chain1[i].Address, SuperAmount, MetaSuperAmount, MKSP}
+			FinalChain = append(FinalChain, Unit)
 		}
 	}
 	return FinalChain

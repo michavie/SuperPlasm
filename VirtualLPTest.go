@@ -158,11 +158,11 @@ func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.S
 
 func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.SuperPowerPercent {
 	fmt.Println("")
-	fmt.Println("Computing  Kosonic-SUPER-Power Chain ...")
+	fmt.Println("Computing  Kosonic SUPER-Power Chain ...")
 	Start1 := time.Now()
 	KosonicSuperPowerChain := fr.CreateKosonicSuperPowerChain(Chain1, Chain2)
 	Elapsed1 := time.Since(Start1)
-	fmt.Println("Done computing  Kosonic-SUPER-Power Chain, time required", Elapsed1)
+	fmt.Println("Done computing  Kosonic SUPER-Power Chain, time required", Elapsed1)
 	fmt.Println("===")
 
 	fmt.Println("Computing  Kosonic SUPER-Power-Percent Chain ...")
@@ -193,6 +193,43 @@ func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP)
 
 }
 
+func SnapshooterPrinterMetaKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.MKSuperPowerPercent {
+	fmt.Println("")
+	fmt.Println("Computing  Meta-Kosonic SUPER-Power Chain ...")
+	Start1 := time.Now()
+	MetaKosonicSuperPowerChain := fr.CreateMetaKosonicSuperPowerChain(Chain1, Chain2)
+	Elapsed1 := time.Since(Start1)
+	fmt.Println("Done computing  Meta-Kosonic-SUPER-Power Chain, time required", Elapsed1)
+	fmt.Println("===")
+
+	fmt.Println("Computing  Meta-Kosonic SUPER-Power-Percent Chain ...")
+	Start2 := time.Now()
+	MetaKosonicSuperPowerPercentChain := fr.MKSuperPowerPercentComputer(MetaKosonicSuperPowerChain)
+	Elapsed2 := time.Since(Start2)
+	fmt.Println("Done computing  Meta-Kosonic SUPER-Power-Percent Chain, time required", Elapsed2)
+	fmt.Println("===")
+
+	fmt.Println("Sorting  Meta-Kosonic SUPER-Power-Percent Chain ...")
+	Start3 := time.Now()
+	SortedMetaKosonicSuperPowerPercentChain := fr.SortMKSuperPowerPercent(MetaKosonicSuperPowerPercentChain)
+	Elapsed3 := time.Since(Start3)
+	fmt.Println("Done sorting Meta-Kosonic SUPER-Power-Percent Chain, time required", Elapsed3)
+	fmt.Println("===")
+
+	fmt.Println("Outputting sorted MEta-Kosonic SUPER-Power-Percent-Chain to Chain_MetaKosonic-SUPER-Power-Percent-sorted.txt")
+	OutputFile, err := os.Create("Chain_MetaKosonic-SUPER-Power-Percent-sorted.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer OutputFile.Close()
+	_, _ = fmt.Fprintln(OutputFile, SortedMetaKosonicSuperPowerPercentChain)
+	fmt.Println("Done Outputting sorted Meta-Kosonic SUPER-Power-Percent-Chain to Chain_MetaKosonic-SUPER-Power-Percent-sorted.txt")
+	fmt.Println("")
+
+	return SortedMetaKosonicSuperPowerPercentChain
+
+}
+
 func main() {
 	SuperFarmRewardAmount := int64(1665)
 
@@ -201,8 +238,12 @@ func main() {
 	CamelChain := SnapshooterPrinterSuperCamel()
 	VLPChain := SnapshooterPrinterSuperVirtualLP(SuperLPChain, CamelChain)
 	SnapshooterPrinterSuperVirtualLPRewards(VLPChain, SuperFarmRewardAmount)
+
 	SortedSuperPowerChain := SnapshooterPrinterSuperPower(SuperChain, SuperLPChain)
 	SnapshooterPrinterKosonicSuperPower(SuperChain, SuperLPChain)
+
+	//SortedMKSuperPowerChain := SnapshooterPrinterMetaKosonicSuperPower(SuperChain, SuperLPChain)
+	SnapshooterPrinterMetaKosonicSuperPower(SuperChain, SuperLPChain)
 
 	fmt.Println("")
 	fmt.Println("======RESULTS======")
