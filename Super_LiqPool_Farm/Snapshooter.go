@@ -247,9 +247,10 @@ func CreateMetaKosonicSuperPowerChain(Chain1 []Super, Chain2 []SuperLP) []MKSupe
 				MetaSuperAmount = SuperAmount
 			}
 			MKSP = KosonicSuperPowerComputer(MetaSuperAmount, LPAmount)
-
-			Unit := MKSuperPower{Chain1[i].Address, SuperAmount, MetaSuperAmount, MKSP}
-			FinalChain = append(FinalChain, Unit)
+			if mt.DecimalGreaterThan(MKSP, p.NFS("0")) == true {
+				Unit := MKSuperPower{Chain1[i].Address, SuperAmount, MetaSuperAmount, MKSP}
+				FinalChain = append(FinalChain, Unit)
+			}
 		}
 	}
 	fmt.Println("")
