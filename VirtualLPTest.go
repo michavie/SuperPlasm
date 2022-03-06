@@ -9,6 +9,17 @@ import (
 	"time"
 )
 
+var (
+	N01 = "Snapshot_SUPER.txt"
+	N02 = "Snapshot_SUPER-EGLD-LP.txt"
+	N03 = "Snapshot_SUPER-Camel.txt"
+	N04 = "Computed_SUPER-VLP.txt"
+	N05 = "Computed_SUPER-VLP-Rewards.txt"
+	N06 = "Computed_SUPER-Power-variant1-PS.txt"
+	N07 = "Computed_SUPER-Power-variant2-PS.txt"
+	N08 = "Computed_SUPER-Power-variant3-PS.txt"
+)
+
 func SnapshooterPrinterSuper() []fr.Super {
 	fmt.Println("")
 	fmt.Println("Snapshotting SUPER Amounts ...")
@@ -18,14 +29,14 @@ func SnapshooterPrinterSuper() []fr.Super {
 	fmt.Println("Done snapshotting SUPER Amounts, time required:", Elapsed)
 
 	//Printing Snapshot
-	fmt.Println("Outputting SUPER Amounts to Chain_SUPER.txt")
-	OutputFile, err := os.Create("Chain_SUPER.txt")
+	fmt.Println("Outputting SUPER Amounts to", N01)
+	OutputFile, err := os.Create(N01)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, SuperChain)
-	fmt.Println("DONE Outputting SUPER Amounts to SUPER-chain.txt")
+	fmt.Println("DONE Outputting SUPER Amounts to", N01)
 	fmt.Println("")
 
 	return SuperChain
@@ -40,14 +51,14 @@ func SnapshooterPrinterSuperLP() []fr.SuperLP {
 	fmt.Println("Done snapshotting SUPER-LP Amounts, time required:", Elapsed)
 
 	//Printing Snapshot
-	fmt.Println("Outputting SUPER-LP Amounts to Chain_SUPER-LP.txt")
-	OutputFile, err := os.Create("Chain_SUPER-LP.txt")
+	fmt.Println("Outputting SUPER-LP Amounts to", N02)
+	OutputFile, err := os.Create(N02)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, LPChain)
-	fmt.Println("DONE Outputting SUPER Amounts to SUPER-chain.txt")
+	fmt.Println("DONE Outputting SUPER Amounts to", N02)
 	fmt.Println("")
 
 	return LPChain
@@ -62,14 +73,14 @@ func SnapshooterPrinterSuperCamel() []fr.CamelAmount {
 	fmt.Println("Done snapshotting SUPER-Camel Amounts, time required:", Elapsed)
 
 	//Printing Snapshot
-	fmt.Println("Outputting SUPER-Camel Amounts to Chain_SUPER-Camel.txt")
-	OutputFile, err := os.Create("Chain_SUPER-Camel.txt")
+	fmt.Println("Outputting SUPER-Camel Amounts to", N03)
+	OutputFile, err := os.Create(N03)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, CamelChain)
-	fmt.Println("DONE Outputting SUPER Amounts to SUPER-chain.txt")
+	fmt.Println("DONE Outputting SUPER Amounts to", N03)
 	fmt.Println("")
 
 	return CamelChain
@@ -84,14 +95,14 @@ func SnapshooterPrinterSuperVirtualLP(Chain1 []fr.SuperLP, Chain2 []fr.CamelAmou
 	fmt.Println("Done computing SUPER-VLP Amounts, time required:", Elapsed)
 
 	//Printing Snapshot
-	fmt.Println("Outputting SUPER-VLP Amounts to Chain_SUPER-VLP.txt")
-	OutputFile, err := os.Create("Chain_SUPER-VLP.txt")
+	fmt.Println("Outputting SUPER-VLP Amounts to", N04)
+	OutputFile, err := os.Create(N04)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, VLPChain)
-	fmt.Println("DONE Outputting SUPER-VLP Amounts to Chain_SUPER-VLP.txt")
+	fmt.Println("DONE Outputting SUPER-VLP Amounts to", N04)
 	fmt.Println("")
 
 	return VLPChain
@@ -106,20 +117,20 @@ func SnapshooterPrinterSuperVirtualLPRewards(Chain1 []fr.SuperVLP, Reward int64)
 	fmt.Println("Done computing SUPER-VLP Rewards, time required:", Elapsed)
 
 	//Printing Snapshot
-	fmt.Println("Outputting SUPER-VLP-Rewards to Chain_SUPER-VLP-Rewards.txt")
-	OutputFile, err := os.Create("Chain_SUPER-VLP-Rewards.txt")
+	fmt.Println("Outputting SUPER-VLP-Rewards to", N05)
+	OutputFile, err := os.Create(N05)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, RewardChain)
-	fmt.Println("DONE Outputting SUPER-VLP Amounts to Chain_SUPER-VLP.txt")
+	fmt.Println("DONE Outputting SUPER-VLP Amounts to", N05)
 	fmt.Println("")
 
 	return RewardChain
 }
 
-func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.SuperPowerPercent {
+func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.MKSuperPowerPercent {
 	fmt.Println("")
 	fmt.Println("Computing SUPER-Power Chain ...")
 	Start1 := time.Now()
@@ -142,21 +153,21 @@ func SnapshooterPrinterSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.S
 	fmt.Println("Done sorting  SUPER-Power-Percent Chain, time required", Elapsed3)
 	fmt.Println("===")
 
-	fmt.Println("Outputting sorted SUPER-Power-Percent-Chain to Chain_SUPER-Power-Percent-sorted.txt")
-	OutputFile, err := os.Create("Chain_SUPER-Power-Percent-sorted.txt")
+	fmt.Println("Outputting sorted SUPER-Power-Percent-Chain to", N06)
+	OutputFile, err := os.Create(N06)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, SortedSuperPowerPercentChain)
-	fmt.Println("Done Outputting sorted SUPER-Power-Percent-Chain to Chain_SUPER-Power-Percent-sorted.txt")
+	fmt.Println("Done Outputting sorted SUPER-Power-Percent-Chain to", N06)
 	fmt.Println("")
 
 	return SortedSuperPowerPercentChain
 
 }
 
-func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.SuperPowerPercent {
+func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP) []fr.MKSuperPowerPercent {
 	fmt.Println("")
 	fmt.Println("Computing Kosonic SUPER-Power Chain ...")
 	Start1 := time.Now()
@@ -179,14 +190,14 @@ func SnapshooterPrinterKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.SuperLP)
 	fmt.Println("Done sorting Kosonic SUPER-Power-Percent Chain, time required", Elapsed3)
 	fmt.Println("===")
 
-	fmt.Println("Outputting sorted Kosonic SUPER-Power-Percent-Chain to Chain_Kosonic-SUPER-Power-Percent-sorted.txt")
-	OutputFile, err := os.Create("Chain_Kosonic-SUPER-Power-Percent-sorted.txt")
+	fmt.Println("Outputting sorted Kosonic SUPER-Power-Percent-Chain to", N07)
+	OutputFile, err := os.Create(N07)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer OutputFile.Close()
 	_, _ = fmt.Fprintln(OutputFile, SortedKosonicSuperPowerPercentChain)
-	fmt.Println("Done Outputting sorted Kosonic SUPER-Power-Percent-Chain to Chain_Kosonic-SUPER-Power-Percent-sorted.txt")
+	fmt.Println("Done Outputting sorted Kosonic SUPER-Power-Percent-Chain to", N07)
 	fmt.Println("")
 
 	return SortedKosonicSuperPowerPercentChain
@@ -204,30 +215,29 @@ func SnapshooterPrinterMetaKosonicSuperPower(Chain1 []fr.Super, Chain2 []fr.Supe
 
 	fmt.Println("Computing Meta-Kosonic SUPER-Power-Percent Chain ...")
 	Start2 := time.Now()
-	MetaKosonicSuperPowerPercentChain := fr.MKSuperPowerPercentComputer(MetaKosonicSuperPowerChain)
+	MetaKosonicSuperPowerPercentChain := fr.SuperPowerPercentComputer(MetaKosonicSuperPowerChain)
 	Elapsed2 := time.Since(Start2)
 	fmt.Println("Done computing  Meta-Kosonic SUPER-Power-Percent Chain, time required", Elapsed2)
 	fmt.Println("===")
 
 	fmt.Println("Sorting Meta-Kosonic SUPER-Power-Percent Chain ...")
 	Start3 := time.Now()
-	SortedMetaKosonicSuperPowerPercentChain := fr.SortMKSuperPowerPercent(MetaKosonicSuperPowerPercentChain)
+	SortedMetaKosonicSuperPowerPercentChain := fr.SortSuperPowerPercent(MetaKosonicSuperPowerPercentChain)
 	Elapsed3 := time.Since(Start3)
 	fmt.Println("Done sorting Meta-Kosonic SUPER-Power-Percent Chain, time required", Elapsed3)
 	fmt.Println("===")
 
-	fmt.Println("Outputting sorted MEta-Kosonic SUPER-Power-Percent-Chain to Chain_MetaKosonic-SUPER-Power-Percent-sorted.txt")
-	OutputFile, err := os.Create("Chain_MetaKosonic-SUPER-Power-Percent-sorted.txt")
+	fmt.Println("Outputting sorted Meta-Kosonic SUPER-Power-Percent-Chain to", N08)
+	OutputFile3, err := os.Create(N08)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer OutputFile.Close()
-	_, _ = fmt.Fprintln(OutputFile, SortedMetaKosonicSuperPowerPercentChain)
-	fmt.Println("Done Outputting sorted Meta-Kosonic SUPER-Power-Percent-Chain to Chain_MetaKosonic-SUPER-Power-Percent-sorted.txt")
+	defer OutputFile3.Close()
+	_, _ = fmt.Fprintln(OutputFile3, SortedMetaKosonicSuperPowerPercentChain)
+	fmt.Println("Done Outputting sorted Meta-Kosonic SUPER-Power-Percent-Chain to", N08)
 	fmt.Println("")
 
 	return SortedMetaKosonicSuperPowerPercentChain
-
 }
 
 func main() {
@@ -240,10 +250,8 @@ func main() {
 	SnapshooterPrinterSuperVirtualLPRewards(VLPChain, SuperFarmRewardAmount)
 
 	SortedSuperPowerChain := SnapshooterPrinterSuperPower(SuperChain, SuperLPChain)
-	SnapshooterPrinterKosonicSuperPower(SuperChain, SuperLPChain)
-
-	//SortedMKSuperPowerChain := SnapshooterPrinterMetaKosonicSuperPower(SuperChain, SuperLPChain)
-	SnapshooterPrinterMetaKosonicSuperPower(SuperChain, SuperLPChain)
+	SortedKosonicSuperPowerChain := SnapshooterPrinterKosonicSuperPower(SuperChain, SuperLPChain)
+	SortedMetaKosonicSuperPowerChain := SnapshooterPrinterMetaKosonicSuperPower(SuperChain, SuperLPChain)
 
 	fmt.Println("")
 	fmt.Println("======RESULTS======")
@@ -251,5 +259,7 @@ func main() {
 	fmt.Println("There are ", len(CamelChain), "addresses that have Camels")
 	fmt.Println("There are only ", len(VLPChain), "addresses that are eligible for LP Rewards")
 	fmt.Println("There are only ", len(SortedSuperPowerChain), "addresses that have SuperPower")
+	fmt.Println("There are only ", len(SortedKosonicSuperPowerChain), "addresses that have Kosonic SuperPower")
+	fmt.Println("There are only ", len(SortedMetaKosonicSuperPowerChain), "addresses that have Meta-Kosonic SuperPower")
 
 }

@@ -9,13 +9,149 @@ var (
 	SuperEgldLPDecimals = int64(18)
 )
 
-func ConvertAtomicUnits(Number string) *p.Decimal {
+func ConvertAU(Number string) *p.Decimal {
 	Value := p.NFS(Number)
 	Result := mt.DIVxc(Value, mt.POWxc(p.NFI(10), p.NFI(SuperEgldLPDecimals)))
 	return Result
 }
 
-//Returns the MetaKosonicSuperPowerPromille used to Compute the Meta-Kosonic-Super-Power
+//======================================================================================================================
+//======================================================================================================================
+//
+//
+//[A] - Liquidity Program Reward Functions
+//
+//
+//[A]01 - LPTierProcent
+//Returns SUPER-EGLD-LP Bonus % given by its Amount based on 7 Tiers
+//
+func LpTierProcent(LP *p.Decimal) *p.Decimal {
+	var (
+		TierBonus = new(p.Decimal)
+		T1        = p.NFI(1)
+		T2        = p.NFI(2)
+		T3        = p.NFI(5)
+		T4        = p.NFI(10)
+		T5        = p.NFI(20)
+		T6        = p.NFI(50)
+		T7        = p.NFI(100)
+
+		NoBonus = p.NFI(0)
+		BonusT1 = p.NFI(1)
+		BonusT2 = p.NFI(2)
+		BonusT3 = p.NFI(3)
+		BonusT4 = p.NFI(4)
+		BonusT5 = p.NFI(5)
+		BonusT6 = p.NFI(6)
+		BonusT7 = p.NFI(7)
+	)
+
+	if mt.DecimalLessThan(LP, T1) == true {
+		TierBonus = NoBonus
+	} else if mt.DecimalGreaterThanOrEqual(LP, T1) == true && mt.DecimalLessThan(LP, T2) == true {
+		TierBonus = BonusT1
+	} else if mt.DecimalGreaterThanOrEqual(LP, T2) == true && mt.DecimalLessThan(LP, T3) == true {
+		TierBonus = BonusT2
+	} else if mt.DecimalGreaterThanOrEqual(LP, T3) == true && mt.DecimalLessThan(LP, T4) == true {
+		TierBonus = BonusT3
+	} else if mt.DecimalGreaterThanOrEqual(LP, T4) == true && mt.DecimalLessThan(LP, T5) == true {
+		TierBonus = BonusT4
+	} else if mt.DecimalGreaterThanOrEqual(LP, T5) == true && mt.DecimalLessThan(LP, T6) == true {
+		TierBonus = BonusT5
+	} else if mt.DecimalGreaterThanOrEqual(LP, T6) == true && mt.DecimalLessThan(LP, T7) == true {
+		TierBonus = BonusT6
+	} else {
+		TierBonus = BonusT7
+	}
+
+	return TierBonus
+}
+
+//======================================================================================================================
+//
+//[A]02 - LPTierProcent
+//Returns SUPER-EGLD-LP Bonus % given by the Camel.
+//If Camel is more than 0, Bonus is 10%
+//
+func CamelProcent(Camel *p.Decimal) *p.Decimal {
+	var (
+		CamelTotalBonus = new(p.Decimal)
+		Bonus           = p.NFI(10)
+	)
+
+	if mt.DecimalGreaterThan(Camel, p.NFI(0)) == true {
+		CamelTotalBonus = Bonus
+	} else {
+		CamelTotalBonus = p.NFI(1)
+	}
+	//CamelTotalBonus = mt.MULxc(Camel, Bonus)
+	return CamelTotalBonus
+}
+
+//======================================================================================================================
+//
+//[A]03 - LPTierProcent
+//Returns the Bonus given by the combined
+//	SUPER-EGLD-LP Bonus % given by its Amount and
+//	SUPER-EGLD-LP Bonus % given by the Camel
+//as multiplier (not as %)
+//
+func WeightBonus(TB, CB *p.Decimal) *p.Decimal {
+	P1 := mt.ADDxc(p.NFI(1), mt.DIVxc(TB, p.NFI(100)))
+	P2 := mt.ADDxc(p.NFI(1), mt.DIVxc(CB, p.NFI(100)))
+	TP := mt.MULxc(P1, P2)
+
+	return TP
+}
+
+//======================================================================================================================
+//
+//[A]04 - VirtualLP
+//Returns the Virtual SUPER-EGLD-LP
+//Virtual SUPER-EGLD-LP is the SUPER-EGLD-LP multiplied by the Weight Bonus
+//
+func VirtualLP(LpAmount, CamelAmount *p.Decimal) *p.Decimal {
+	TierBonus := LpTierProcent(LpAmount)
+	CamelBonus := CamelProcent(CamelAmount)
+	Weight := WeightBonus(TierBonus, CamelBonus)
+
+	Result := mt.MULxc(LpAmount, Weight)
+	return mt.TruncateCustom(Result, 18)
+}
+
+//======================================================================================================================
+//
+//[A]05 - SuperRewardComputer
+//
+//Computes Rewards earned by VirtualLP using a given Amount of Reward per Day
+//and creates a Chain with the Results
+func SuperRewardComputer(Chain1 []SuperVLP, RewardAmount *p.Decimal) []SuperFarmReward {
+	var (
+		VLPSum     = new(p.Decimal)
+		FinalChain []SuperFarmReward
+	)
+	for i := 0; i < len(Chain1); i++ {
+		VLPSum = mt.ADDxc(VLPSum, Chain1[i].VLP)
+	}
+	for i := 0; i < len(Chain1); i++ {
+		Reward := mt.TruncateCustom(mt.DIVxc(mt.MULxc(Chain1[i].VLP, RewardAmount), VLPSum), 18)
+		Unit := SuperFarmReward{Chain1[i].Address, Reward}
+		FinalChain = append(FinalChain, Unit)
+	}
+	return FinalChain
+}
+
+//======================================================================================================================
+//======================================================================================================================
+//
+//
+//[B] - Super Power Computation Functions
+//
+//
+//[B]01 - MetaKosonicSuperPowerPromille
+//Returns the Meta-Kosonic Super-Power Promille used to compute the meta-Super
+//Meta-Super is the "virtual" Super Amount used in calculating the Meta-Kosonic Super-Power
+//
 func MetaKosonicSuperPowerPromille(SuperAmount *p.Decimal) *p.Decimal {
 	var (
 		ProMille = new(p.Decimal)
@@ -154,219 +290,151 @@ func MetaKosonicSuperPowerPromille(SuperAmount *p.Decimal) *p.Decimal {
 	return PM
 }
 
-//Returns Bonus Given By LP Tier
-func LpTierProcent(LP *p.Decimal) *p.Decimal {
+//======================================================================================================================
+//
+//
+//[B]02 - SuperPowerComputerCore
+//SuperPowerComputerCore is the Core Functions that computes all 3 variants of Super-Power
+//The Super-Power Variants are:
+//	1)		Super-Power =      Super.Amount * (Super-EGLD-LP).Amount
+//	2)Kosonic 	Super-Power = 	   Super.Amount * [LOG(base 2) from (Super-EGLD-LP).Amount]
+//	3)Meta-Kosonic 	Super-Power = meta-Super.Amount * [LOG(base 2) from (Super-EGLD-LP).Amount]
+func SuperPowerComputerCore(SuperAmount, LPAmount, LPThreshold *p.Decimal) *p.Decimal {
 	var (
-		TierBonus = new(p.Decimal)
-		T1        = p.NFI(1)
-		T2        = p.NFI(2)
-		T3        = p.NFI(5)
-		T4        = p.NFI(10)
-		T5        = p.NFI(20)
-		T6        = p.NFI(50)
-		T7        = p.NFI(100)
-
-		NoBonus = p.NFI(0)
-		BonusT1 = p.NFI(1)
-		BonusT2 = p.NFI(2)
-		BonusT3 = p.NFI(3)
-		BonusT4 = p.NFI(4)
-		BonusT5 = p.NFI(5)
-		BonusT6 = p.NFI(6)
-		BonusT7 = p.NFI(7)
+		SP                           = new(p.Decimal)
+		FinalSP                      = new(p.Decimal)
+		LiquidityBonus               = new(p.Decimal)
+		SuperPowerExistenceThreshold = p.NFI(10)
 	)
 
-	if mt.DecimalLessThan(LP, T1) == true {
-		TierBonus = NoBonus
-	} else if mt.DecimalGreaterThanOrEqual(LP, T1) == true && mt.DecimalLessThan(LP, T2) == true {
-		TierBonus = BonusT1
-	} else if mt.DecimalGreaterThanOrEqual(LP, T2) == true && mt.DecimalLessThan(LP, T3) == true {
-		TierBonus = BonusT2
-	} else if mt.DecimalGreaterThanOrEqual(LP, T3) == true && mt.DecimalLessThan(LP, T4) == true {
-		TierBonus = BonusT3
-	} else if mt.DecimalGreaterThanOrEqual(LP, T4) == true && mt.DecimalLessThan(LP, T5) == true {
-		TierBonus = BonusT4
-	} else if mt.DecimalGreaterThanOrEqual(LP, T5) == true && mt.DecimalLessThan(LP, T6) == true {
-		TierBonus = BonusT5
-	} else if mt.DecimalGreaterThanOrEqual(LP, T6) == true && mt.DecimalLessThan(LP, T7) == true {
-		TierBonus = BonusT6
-	} else {
-		TierBonus = BonusT7
-	}
-
-	return TierBonus
-}
-
-// Returns Bonus Given by Camel Ownership
-func CamelProcent(Camel *p.Decimal) *p.Decimal {
-	var (
-		CamelTotalBonus = new(p.Decimal)
-		Bonus           = p.NFI(10)
-	)
-
-	if mt.DecimalGreaterThanOrEqual(Camel, p.NFI(1)) == true {
-		CamelTotalBonus = Bonus
-	} else {
-		CamelTotalBonus = p.NFI(1)
-	}
-	//CamelTotalBonus = mt.MULxc(Camel, Bonus)
-	return CamelTotalBonus
-
-}
-
-//Returns Weighted Bonus Given By Camel Bonus and SuperLP Bonus
-func WeightBonus(TB, CB *p.Decimal) *p.Decimal {
-	P1 := mt.ADDxc(p.NFI(1), mt.DIVxc(TB, p.NFI(100)))
-	P2 := mt.ADDxc(p.NFI(1), mt.DIVxc(CB, p.NFI(100)))
-	TP := mt.MULxc(P1, P2)
-
-	return TP
-}
-
-//Returns the Virtual LP Amount, which is the Super LP Amount weighted by the Weight Bonus
-func VirtualLP(LpAmount, CamelAmount *p.Decimal) *p.Decimal {
-	TierBonus := LpTierProcent(LpAmount)
-	CamelBonus := CamelProcent(CamelAmount)
-	Weight := WeightBonus(TierBonus, CamelBonus)
-
-	Result := mt.MULxc(LpAmount, Weight)
-	return mt.TruncateCustom(Result, 18)
-}
-
-// Computes Super Power : Super * SuperLP
-func SuperPowerComputer(SuperAmount, LPAmount *p.Decimal) *p.Decimal {
-	var SP = new(p.Decimal)
-	if mt.DecimalLessThanOrEqual(LPAmount, p.NFS("1")) == true {
+	//Checks if LP is less than the Threshold
+	if mt.DecimalLessThanOrEqual(LPAmount, LPThreshold) == true {
+		//Checks is Address has less than 1 Super. A minimum of 1 Super is required for Super-Power
 		if mt.DecimalLessThan(SuperAmount, p.NFS("1")) == true {
+			//In case address has less than 1 Super, SuperPower is zero
 			SP = p.NFS("0")
-		} else {
+		} else if mt.DecimalGreaterThanOrEqual(SuperAmount, p.NFS("1")) == true {
+			//In case address has more than 1 Super or equal, SuperPower is non Zero
+			//Because LP is less than Threshold Liquidity Bonus is 1, thus
+			//SuperPower is equal to SuperAmount
 			SP = mt.TruncateCustom(SuperAmount, 0)
 		}
+		//Checks if LP is greater than or equal to the Threshold
+	} else if mt.DecimalGreaterThan(LPAmount, LPThreshold) == true {
+		//In case the address has a greater than Threshold LP Amount
+		//Which Translates to a Liquidity Bonus greater than 1.
+		//
+		//If LPThreshold is 1 (Normal Super-Power is to be calculated)
+		//"Liquidity Bonus" equals normal LP
+		//If LPThreshold is 2 (Kosonic/Meta-Kosonic Super-Power is to be calculated)
+		//"Liquidity Bonus" equals Log Base 2 of LP
+		if mt.DecimalEqual(LPThreshold, p.NFI(1)) == true {
+			LiquidityBonus = LPAmount
+		} else if mt.DecimalEqual(LPThreshold, p.NFI(2)) == true {
+			LiquidityBonus = mt.TruncateCustom(mt.Logarithm(LPThreshold, LPAmount), 18)
+		}
+
+		//And Thus SuperPower is computed by multiplying SuperAmount with "Liquidity Bonus"
+		SP = mt.MULxc(SuperAmount, LiquidityBonus)
+	}
+
+	//Resulted SuperPower must be greater than "SuperPowerExistenceThreshold" to exist.
+	//If it is lower than "SuperPowerExistenceThreshold", it is set automatically to 0.
+	if mt.DecimalGreaterThanOrEqual(SP, SuperPowerExistenceThreshold) == true {
+		FinalSP = SP
 	} else {
-		SP1 := mt.MULxc(SuperAmount, LPAmount)
-		if mt.DecimalGreaterThan(SP1, p.NFS("1")) == true {
-			SP = SP1
-		} else {
-			SP = p.NFS("0")
-		}
+		FinalSP = p.NFS("0")
 	}
 
-	return mt.TruncateCustom(SP, 0)
+	return mt.TruncateCustom(FinalSP, 0)
 }
 
-// Computes Kosonic Super Power : Super * log(2,SuperLP)
-func KosonicSuperPowerComputer(SuperAmount, LPAmount *p.Decimal) *p.Decimal {
-	var KSP = new(p.Decimal)
-	LBase := p.NFS("2")
-	if mt.DecimalLessThanOrEqual(LPAmount, LBase) == true {
-		if mt.DecimalLessThan(SuperAmount, p.NFS("1")) == true {
-			KSP = p.NFS("0")
-		} else {
-			KSP = SuperAmount
-		}
-	} else {
-		KosonicLP := mt.TruncateCustom(mt.Logarithm(LBase, LPAmount), 18)
-		SP1 := mt.MULxc(SuperAmount, KosonicLP)
-		if mt.DecimalGreaterThan(SP1, p.NFS("1")) == true {
-			KSP = SP1
-		} else {
-			KSP = p.NFS("0")
-		}
-	}
-
-	return mt.TruncateCustom(KSP, 0)
+//======================================================================================================================
+//
+//
+//[B]02a - SuperPowerComputer
+//Computes the 1st variant of Super-Power
+//	1)		Super-Power =      Super.Amount * (Super-EGLD-LP).Amount
+func SuperPowerComputer(SuperValue, LPValue *p.Decimal) *p.Decimal {
+	//Threshold 1 means LP is left in its native state
+	LPThresholdValue := p.NFS("1")
+	Result := SuperPowerComputerCore(SuperValue, LPValue, LPThresholdValue)
+	return Result
 }
 
-//Computes Rewards earned by VirtualLP using a given Amount of Reward per Day
-func SuperRewardComputer(Chain1 []SuperVLP, RewardAmount *p.Decimal) []SuperFarmReward {
-	var (
-		VLPSum     = new(p.Decimal)
-		FinalChain []SuperFarmReward
-	)
-	for i := 0; i < len(Chain1); i++ {
-		VLPSum = mt.ADDxc(VLPSum, Chain1[i].VLP)
-	}
-	for i := 0; i < len(Chain1); i++ {
-		Reward := mt.TruncateCustom(mt.DIVxc(mt.MULxc(Chain1[i].VLP, RewardAmount), VLPSum), 18)
-		Unit := SuperFarmReward{Chain1[i].Address, Reward}
-		FinalChain = append(FinalChain, Unit)
-	}
-	return FinalChain
+//======================================================================================================================
+//
+//
+//[B]02b - KosonicSuperPowerComputer
+//Computes the 2nd variant of Super-Power
+//	2)Kosonic 	Super-Power = 	   Super.Amount * [LOG(base 2) from (Super-EGLD-LP).Amount]
+func KosonicSuperPowerComputer(SuperValue, LPValue *p.Decimal) *p.Decimal {
+	//Threshold 2 means LP is logarithmized in Base 2
+	LPThresholdValue := p.NFS("2")
+	Result := SuperPowerComputerCore(SuperValue, LPValue, LPThresholdValue)
+	return Result
 }
 
-//Kosonic SUPER POWER Percent Computer and Percent Sorter
-//Returns the individual Percents of Super Power
-func SuperPowerPercentComputer(Chain []SuperPower) []SuperPowerPercent {
+//======================================================================================================================
+//
+//
+//[B]02c - Meta-Kosonic SuperPowerComputer
+//Computes the 3rd variant of Super-Power
+//	3)Meta-Kosonic 	Super-Power = meta-Super.Amount * [LOG(base 2) from (Super-EGLD-LP).Amount]
+func MetaKosonicSuperPowerComputer(SuperValue, LPValue *p.Decimal) *p.Decimal {
+	MetaSuper := ComputeMetaSuper(SuperValue)
+	Result := KosonicSuperPowerComputer(MetaSuper, LPValue)
+	return Result
+}
+
+//======================================================================================================================
+//
+//
+//[B]03 - ComputeMetaSuper
+//Computes the meta-Super using the MetaKosonicSuperPowerPromille
+func ComputeMetaSuper(Super *p.Decimal) *p.Decimal {
+	MetaKosonicPromille := MetaKosonicSuperPowerPromille(Super)
+	PurePromille := mt.DIVxc(MetaKosonicPromille, p.NFI(1000))
+	PromilleMultiplier := mt.ADDxc(p.NFI(1), PurePromille)
+	MetaSuper := mt.MULxc(Super, PromilleMultiplier)
+	return MetaSuper
+}
+
+//======================================================================================================================
+//
+//
+//[B]04a - SuperPowerPercentComputer
+//Creates an unsorted Chain with the % Values of each address SUPER-Power
+//Works for all Super-Power variants.
+func SuperPowerPercentComputer(Chain []MKSuperPower) []MKSuperPowerPercent {
 	var (
 		SPSum      = new(p.Decimal)
-		FinalChain []SuperPowerPercent
+		FinalChain []MKSuperPowerPercent
 	)
 	for i := 0; i < len(Chain); i++ {
 		SPSum = mt.ADDxc(SPSum, Chain[i].SuperPower)
 	}
 	for i := 0; i < len(Chain); i++ {
 		Percent := mt.TruncateCustom(mt.DIVxc(mt.MULxc(Chain[i].SuperPower, p.NFS("100")), SPSum), 18)
-		Unit := SuperPowerPercent{SuperPower{Chain[i].Address, Chain[i].SuperPower}, Percent}
+		Unit := MKSuperPowerPercent{Chain[i], Percent}
 		FinalChain = append(FinalChain, Unit)
 	}
 	return FinalChain
 }
 
-//Sorts SuperPowerPercent Chain based on Percent
-func SortSuperPowerPercent(Chain []SuperPowerPercent) []SuperPowerPercent {
-	var (
-		SortedChain []SuperPowerPercent
-	)
-	GetMaxElement := func(Chain []SuperPowerPercent) int {
-		Max := 0
-		for i := 0; i < len(Chain)-2; i++ {
-			if mt.DecimalGreaterThanOrEqual(Chain[i].SuperPowerPercent, Chain[Max].SuperPowerPercent) == true {
-				Max = i
-			}
-		}
-		return Max
-	}
-	Chain2Sort := Chain
-
-	for i := 0; i < len(Chain); i++ {
-		Biggest := GetMaxElement(Chain2Sort)
-		Unit := SuperPowerPercent{Chain2Sort[Biggest].Main, Chain2Sort[Biggest].SuperPowerPercent}
-		SortedChain = append(SortedChain, Unit)
-
-		//Removing biggest element
-		//This syntax removes from a slice the element on position Biggest
-		Chain2Sort = append(Chain2Sort[:Biggest], Chain2Sort[Biggest+1:]...)
-
-	}
-	return SortedChain
-}
-
-//Meta Kosonic SUPER POWER Percent Computer and Percent Sorter
-//Returns the individual Percents of Super Power
-func MKSuperPowerPercentComputer(Chain []MKSuperPower) []MKSuperPowerPercent {
-	var (
-		SPSum      = new(p.Decimal)
-		FinalChain []MKSuperPowerPercent
-	)
-	for i := 0; i < len(Chain); i++ {
-		SPSum = mt.ADDxc(SPSum, Chain[i].MetaKosonicSuperPower)
-	}
-	for i := 0; i < len(Chain); i++ {
-		Percent := mt.TruncateCustom(mt.DIVxc(mt.MULxc(Chain[i].MetaKosonicSuperPower, p.NFS("100")), SPSum), 18)
-		Unit := MKSuperPowerPercent{MKSuperPower{Chain[i].Address, Chain[i].Super, Chain[i].MetaSuper, Chain[i].MetaKosonicSuperPower}, Percent}
-		FinalChain = append(FinalChain, Unit)
-	}
-	return FinalChain
-}
-
-//Sorts SuperPowerPercent Chain based on Percent
-func SortMKSuperPowerPercent(Chain []MKSuperPowerPercent) []MKSuperPowerPercent {
+//======================================================================================================================
+//
+//
+//[B]04b - SuperPowerPercentComputer
+//Sorts the Super-Power % Chain from highest % to lowest %
+//Works for all Super-Power variants.
+func SortSuperPowerPercent(Chain []MKSuperPowerPercent) []MKSuperPowerPercent {
 	var (
 		SortedChain []MKSuperPowerPercent
 	)
 	GetMaxElement := func(Chain []MKSuperPowerPercent) int {
 		Max := 0
-		for i := 0; i < len(Chain)-2; i++ {
+		for i := 0; i < len(Chain); i++ {
 			if mt.DecimalGreaterThanOrEqual(Chain[i].MetaKosonicSuperPowerPercent, Chain[Max].MetaKosonicSuperPowerPercent) == true {
 				Max = i
 			}
